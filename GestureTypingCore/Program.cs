@@ -9,17 +9,7 @@ namespace GestureTypingCore
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-
-            var words = File.ReadAllLines("TWL06.txt");
-            Console.WriteLine(words.Length);
-
-            var qwerty = Keyboard(new string[] {
-                   "Q W E R T Y U I O P",
-                   " A S D F G H J K L ",
-                   "   Z X C V B N M   " });
-            var qwerty_neighbors = NeighboringKeys(qwerty);
-            var prefixes = Prefixes(words);
+            Console.WriteLine("Gesture Typing!");
 
             #region test path length function
             //var W = qwerty['W'];
@@ -80,166 +70,71 @@ namespace GestureTypingCore
             #endregion
 
             #region confusion version 2
-            Console.WriteLine("##### Confusion ver 2 #####");
+            //Console.WriteLine("##### Confusion ver 2 #####");
+            //var tick1 = DateTime.Now.Ticks;
+            //Console.WriteLine(tick1);
+            //var confusions = Confusions2("CONFUSION", words, prefixes, qwerty_neighbors, qwerty);
+            //foreach (var c in confusions)
+            //{
+            //    Console.WriteLine(c);
+            //}
+            //var tick2 = DateTime.Now.Ticks;
+            //Console.WriteLine(tick2);
+            //Console.WriteLine(tick2 - tick1);
+            #endregion
+
+            FirstImplementation.Init();
+            SecondImplementation.Init();
+
+            var word = "something";
+
+            /* ---------- 1st -1 ----------*/
+            Console.WriteLine("##### 1st implementation #####");
             var tick1 = DateTime.Now.Ticks;
             Console.WriteLine(tick1);
-            var confusions = Confusions2("CONFUSION", words, prefixes, qwerty_neighbors, qwerty);
+
+            //var confusions = SecondImplementation.Confusions("see".ToUpper());
+            //foreach (var c in confusions)
+            //{
+            //    Console.WriteLine(c);
+            //}
+            var tick2 = DateTime.Now.Ticks;
+            Console.WriteLine(tick2);
+            Console.WriteLine(tick2 - tick1);
+
+            /* ---------- 1st - 2 ----------*/
+            Console.WriteLine("\r\n##### 2nd implementation #####");
+            tick1 = DateTime.Now.Ticks;
+            Console.WriteLine(tick1);
+
+            //hytrertyhjklo
+            var confusions = SecondImplementation.Confusions("poiuyt".ToUpper());
             foreach (var c in confusions)
             {
                 Console.WriteLine(c);
             }
-            var tick2 = DateTime.Now.Ticks;
+            tick2 = DateTime.Now.Ticks;
             Console.WriteLine(tick2);
             Console.WriteLine(tick2 - tick1);
-            #endregion
+
+            ///* ---------- 2st - 2 ----------*/
+            //Console.WriteLine("\r\n##### 2nd implementation 2nd Time #####");
+            //tick1 = DateTime.Now.Ticks;
+            //Console.WriteLine(tick1);
+
+            //confusions = SecondImplementation.Confusions(word.ToUpper());
+            //foreach (var c in confusions)
+            //{
+            //    Console.WriteLine(c);
+            //}
+            //tick2 = DateTime.Now.Ticks;
+            //Console.WriteLine(tick2);
+            //Console.WriteLine(tick2 - tick1);
+
             Console.ReadKey();
         }
 
-        static SortedDictionary<char, Point> Keyboard(string[] keyboard)
-        {
-            SortedDictionary<char, Point> dict = new SortedDictionary<char, Point>();
-            for (int y = 0; y < keyboard.Length; y++)
-            {
-                for (int x = 0; x < keyboard[y].Length; x++)
-                {
-                    var key = keyboard[y][x];
-                    if (key != ' ')
-                        dict.Add(key, new Point(x / 2d, y));
-                }
-            }
-            return dict;
-        }
-        static double Distance(Point left, Point right)
-        {
-            return Math.Sqrt((left.X - right.X) * (left.X - right.X) + (left.Y - right.Y) * (left.Y - right.Y));
-        }
-        static double PathLength(string word, SortedDictionary<char, Point> keyboard)
-        {
-            double distance = 0;
-            for (int i = 0; i < word.Length - 1; i++)
-            {
-                distance += Distance(keyboard[word[i]], keyboard[word[i + 1]]);
-            }
-            return distance;
-        }
-        static SortedDictionary<char, string> NeighboringKeys(SortedDictionary<char, Point> keyboard, double radius = 1.5d)
-        {
-            SortedDictionary<char, string> neighboringKeys = new SortedDictionary<char, string>();
-            foreach (var key in keyboard)
-            {
-                string neighbors = "";
-                foreach (var n in keyboard)
-                {
-                    if (Distance(key.Value, n.Value) < radius)
-                    {
-                        neighbors += n.Key;
-                    }
-                }
-                neighboringKeys.Add(key.Key, neighbors);
-            }
-
-            return neighboringKeys;
-        }
-        static string[] Prefixes(string[] words)
-        {
-            List<string> prefixes = new List<string>();
-            foreach (var w in words)
-            {
-                for (int i = 1; i <= w.Length; i++)
-                {
-                    prefixes.Add(w.Substring(0, i));
-                }
-            }
-            return prefixes.Distinct().ToArray();
-        }
-        static string[] Confusions(string word, string[] words, string[] prefixes, SortedDictionary<char, string> neighbors)
-        {
-            List<string> results = new List<string>();
-            Queue<string> queue = new Queue<string>();
-            queue.Enqueue("");
-            Console.WriteLine("Start finding possible words...");
-            while (queue.Count() > 0)
-            {
-                var path = queue.Dequeue();
-                if (path.Length < word.Length)
-                {
-                    foreach (var l in neighbors[word[path.Length]])
-                    {
-                        if (prefixes.Contains(path + l))
-                        {
-                            queue.Enqueue(path + l);
-                        }
-                    }
-                }
-                else if (words.Contains(path))
-                {
-                    results.Add(path);
-                }
-            }
-
-            return results.ToArray();
-        }
-
-        static string[] Confusions2(string word, string[] words, string[] prefixes,
-            SortedDictionary<char, string> neighbors, SortedDictionary<char, Point> keyboard)
-        {
-            List<string> results = new List<string>();
-            Queue<string> queue = new Queue<string>();
-            queue.Enqueue("");
-            Console.WriteLine("Start finding possible words...");
-            while (queue.Count() > 0)
-            {
-                var path = queue.Dequeue();
-                if (path.Length < word.Length)
-                {
-                    foreach (var l in neighbors[word[path.Length]])
-                    {
-                        var newpath = path + l;
-
-                        if (SimilarSegments(keyboard, newpath, word) && prefixes.Contains(newpath))
-                        {
-                            queue.Enqueue(path + l);
-                        }
-                    }
-                }
-                else if (words.Contains(path))
-                {
-                    results.Add(path);
-                }
-            }
-
-            return results.ToArray();
-        }
-        static bool SimilarSegments(SortedDictionary<char, Point> keyboard, string path, string word)
-        {
-            var n = path.Length;
-            if (n < 2)
-            {
-                return true;
-            }
-            var p1 = path[n - 2];
-            var p2 = path[n - 1];
-            var w1 = word[n - 2];
-            var w2 = word[n - 1];
-            var P = keyboard[p2] - keyboard[p1];
-            var W = keyboard[w2] - keyboard[w1];
-            return (P.X * W.X >= 0) && (P.Y * W.Y >= 0) && Distance(P, W) < 2;
-        }
     }
 
-    struct Point
-    {
-        public double X { get; set; }
-        public double Y { get; set; }
-        public Point(double x, double y)
-        {
-            X = x;
-            Y = y;
-        }
 
-        public static Point operator -(Point a, Point b)
-        {
-            return new Point(a.X - b.X, a.Y - b.Y);
-        }
-    }
 }
