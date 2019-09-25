@@ -6,10 +6,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="count_1w100k.txt" />
+    <None Remove="count_big.txt" />
     <None Remove="TWL06.txt" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="count_1w100k.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="count_big.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="TWL06.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

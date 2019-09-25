@@ -108,7 +108,7 @@ namespace GestureTypingCore
             Console.WriteLine(tick1);
 
             //hytrertyhjklo
-            var confusions = SecondImplementation.Confusions("poiuyt".ToUpper());
+            var confusions = SecondImplementation.Confusions("ghjkokjhgfdsert".ToUpper());
             foreach (var c in confusions)
             {
                 Console.WriteLine(c);
@@ -116,6 +116,8 @@ namespace GestureTypingCore
             tick2 = DateTime.Now.Ticks;
             Console.WriteLine(tick2);
             Console.WriteLine(tick2 - tick1);
+            double seconds = (double)(tick2 - tick1) / (double)TimeSpan.TicksPerSecond;
+            Console.WriteLine(seconds);
 
             ///* ---------- 2st - 2 ----------*/
             //Console.WriteLine("\r\n##### 2nd implementation 2nd Time #####");

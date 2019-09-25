@@ -46,7 +46,7 @@ namespace GestureTypingCore
 
         public static void Init()
         {
-            var words = File.ReadAllLines("TWL06.txt");
+            var words = File.ReadAllLines("count_1w100k.txt");
 
             foreach (var k in KBD)
             {
@@ -54,8 +54,9 @@ namespace GestureTypingCore
                 PrefixDict.Add(k.Key, new SortedDictionary<int, List<string>>());
             }
 
-            foreach (var w in words)
+            foreach (var world in words)
             {
+                var w = world.Split("\t")[0].ToUpper();
                 var length = (int)Math.Ceiling(PathLength(w));
                 var initial = w[0];
 
@@ -159,6 +160,7 @@ namespace GestureTypingCore
             }
 
             Console.WriteLine("Start finding possible words...");
+
             while (queue.Count() > 0)
             {
                 var path = queue.Dequeue();
