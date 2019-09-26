@@ -85,53 +85,45 @@ namespace GestureTypingCore
 
             FirstImplementation.Init();
             SecondImplementation.Init();
+            RankedImplementation.Init();
 
-            var word = "something";
+            var word = "efvfertyuiokngre";
 
-            /* ---------- 1st -1 ----------*/
-            Console.WriteLine("##### 1st implementation #####");
+            Console.WriteLine("\r\n##### 2nd implementation #####");
+
             var tick1 = DateTime.Now.Ticks;
             Console.WriteLine(tick1);
 
-            //var confusions = SecondImplementation.Confusions("see".ToUpper());
-            //foreach (var c in confusions)
-            //{
-            //    Console.WriteLine(c);
-            //}
-            var tick2 = DateTime.Now.Ticks;
-            Console.WriteLine(tick2);
-            Console.WriteLine(tick2 - tick1);
-
-            /* ---------- 1st - 2 ----------*/
-            Console.WriteLine("\r\n##### 2nd implementation #####");
-            tick1 = DateTime.Now.Ticks;
-            Console.WriteLine(tick1);
-
-            //hytrertyhjklo
-            var confusions = SecondImplementation.Confusions("ghjkokjhgfdsert".ToUpper());
+            var confusions = SecondImplementation.Confusions(word.ToUpper());
             foreach (var c in confusions)
             {
                 Console.WriteLine(c);
             }
-            tick2 = DateTime.Now.Ticks;
+
+            var tick2 = DateTime.Now.Ticks;
             Console.WriteLine(tick2);
             Console.WriteLine(tick2 - tick1);
             double seconds = (double)(tick2 - tick1) / (double)TimeSpan.TicksPerSecond;
             Console.WriteLine(seconds);
 
-            ///* ---------- 2st - 2 ----------*/
-            //Console.WriteLine("\r\n##### 2nd implementation 2nd Time #####");
-            //tick1 = DateTime.Now.Ticks;
-            //Console.WriteLine(tick1);
+            Console.WriteLine("");
+            Console.WriteLine("\r\n##### 2nd implementation #####");
 
-            //confusions = SecondImplementation.Confusions(word.ToUpper());
-            //foreach (var c in confusions)
-            //{
-            //    Console.WriteLine(c);
-            //}
-            //tick2 = DateTime.Now.Ticks;
-            //Console.WriteLine(tick2);
-            //Console.WriteLine(tick2 - tick1);
+            tick1 = DateTime.Now.Ticks;
+            Console.WriteLine(tick1);
+
+            var rankedConfusions = RankedImplementation.Confusions(word.ToLower());
+            var finalResult = rankedConfusions.OrderByDescending(r => r.Item2).Take(5);
+            foreach (var c in finalResult)
+            {
+                Console.WriteLine($"{c.Item1}\t{c.Item2}");
+            }
+
+            tick2 = DateTime.Now.Ticks;
+            Console.WriteLine(tick2);
+            Console.WriteLine(tick2 - tick1);
+            seconds = (double)(tick2 - tick1) / (double)TimeSpan.TicksPerSecond;
+            Console.WriteLine(seconds);
 
             Console.ReadKey();
         }

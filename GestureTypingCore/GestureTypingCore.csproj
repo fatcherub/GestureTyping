@@ -7,11 +7,15 @@
 
   <ItemGroup>
     <None Remove="count_1w100k.txt" />
+    <None Remove="count_30k.txt" />
     <None Remove="count_big.txt" />
     <None Remove="TWL06.txt" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="count_30k.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="count_1w100k.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

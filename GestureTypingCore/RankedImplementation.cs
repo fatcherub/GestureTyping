@@ -6,7 +6,7 @@ using System.Text;
 
 namespace GestureTypingCore
 {
-    public class SecondImplementation
+    public class RankedImplementation
     {
         struct Point
         {
@@ -28,35 +28,42 @@ namespace GestureTypingCore
         static SortedDictionary<char, char[]> Neighbors;
         static SortedDictionary<char, SortedDictionary<int, List<string>>> WordDict;
         static SortedDictionary<char, SortedDictionary<int, List<string>>> PrefixDict;
+        static SortedDictionary<char, List<Tuple<string, long>>> WordRankDict;
 
-        static SecondImplementation()
+        static RankedImplementation()
         {
             KBD = new SortedDictionary<char, Point>();
             Neighbors = new SortedDictionary<char, char[]>();
             WordDict = new SortedDictionary<char, SortedDictionary<int, List<string>>>();
             PrefixDict = new SortedDictionary<char, SortedDictionary<int, List<string>>>();
+            WordRankDict = new SortedDictionary<char, List<Tuple<string, long>>>();
 
             // QWERTY
             KBD = Keyboard(new string[] {
-                   "Q W E R T Y U I O P",
-                   " A S D F G H J K L ",
-                   "   Z X C V B N M   " });
+                   "Q W E R T Y U I O P".ToLower(),
+                   " A S D F G H J K L ".ToLower(),
+                   "   Z X C V B N M   ".ToLower() });
             Neighbors = NeighboringKeys(KBD);
         }
 
         public static void Init()
         {
             var words = File.ReadAllLines("count_30k.txt");
+            var lowestRank = 800000;
 
             foreach (var k in KBD)
             {
                 WordDict.Add(k.Key, new SortedDictionary<int, List<string>>());
                 PrefixDict.Add(k.Key, new SortedDictionary<int, List<string>>());
+                WordRankDict.Add(k.Key, new List<Tuple<string, long>>());
             }
 
             foreach (var world in words)
             {
-                var w = world.Split("\t")[0].ToUpper();
+                var splits = world.Split("\t");
+                var w = splits[0].ToLower();
+                var r = long.Parse(splits[1]) / lowestRank;
+
                 var length = (int)Math.Ceiling(PathLength(w));
                 var initial = w[0];
 
@@ -66,6 +73,7 @@ namespace GestureTypingCore
                     PrefixDict[initial].Add(length, new List<string>());
                 }
                 WordDict[initial][length].Add(w);
+                WordRankDict[initial].Add(new Tuple<string, long>(w, r));
             }
 
             foreach (var wd in WordDict)
@@ -137,7 +145,7 @@ namespace GestureTypingCore
             return results.ToArray();
         }
 
-        public static string[] Confusions(string input, int bias = 3)
+        public static Tuple<string, long>[] Confusions(string input, int bias = 2)
         {
             List<string> results = new List<string>();
             Queue<string> queue = new Queue<string>();
@@ -148,6 +156,7 @@ namespace GestureTypingCore
             var initial = word[0];
             var prefixDict = PrefixDict[initial];
             var wordDict = WordDict[initial];
+            var wordRankDict = WordRankDict[initial];
 
             int times = 0;
             long timestamp = DateTime.UtcNow.Ticks;
@@ -211,11 +220,30 @@ namespace GestureTypingCore
                 times++;
             }
 
+            Tuple<string, long>[] rankedResult = new Tuple<string, long>[results.Count];
+            var index = 0;
+
+            for (int i = 0; i < wordRankDict.Count; i++)
+            {
+                for (int j = 0; j < results.Count; j++)
+                {
+                    if (wordRankDict[i].Item1 == results[j])
+                    {
+                        rankedResult[index] = wordRankDict[i];
+                        index++;
+                        if (index >= results.Count())
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
             Console.WriteLine($"Loop Count:      {times}");
             Console.WriteLine($"Smallest period: {smallestTick}");
             Console.WriteLine($"Largest period:  {largestTick}");
 
-            return results.ToArray();
+            return rankedResult;
         }
 
         static SortedDictionary<char, Point> Keyboard(string[] keyboard)
